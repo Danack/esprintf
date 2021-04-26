@@ -42,17 +42,29 @@ namespace Esprintf {
 
 namespace {
 
+    use Esprintf\EscapedString;
     use Esprintf\EsprintfException;
+    use Esprintf\UnsafeTemplateException;
 
     /**
-     * @param string $string
-     * @param array $searchReplace
+     * @param string|EscapedString $template
+     * @param array<string, string> $searchReplace
      * @return string
      * @throws EsprintfException
      */
-    function esprintf($string, $searchReplace) : string
+    function esprintf(string|EscapedString $template, array $searchReplace): EscapedString
     {
         $escapedParams = [];
+
+        if (is_string($template) === true) {
+            if (is_literal($template) !== true) {
+                throw UnsafeTemplateException::blah();
+            }
+        }
+        // Not a string, but an EscapedString object
+        else {
+            $template = $template->__toString();
+        }
 
         $count = 0;
         foreach ($searchReplace as $key => $value) {
@@ -67,10 +79,12 @@ namespace {
             $escapedParams[$search] = $escapeFn($replace);
         }
 
-        return str_replace(
+        $stringResult = str_replace(
             array_keys($escapedParams),
             $escapedParams,
-            $string
+            $template
         );
+
+        return EscapedString::fromString($stringResult);
     }
 }

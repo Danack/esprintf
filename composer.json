@@ -13,7 +13,9 @@
     "laminas/laminas-escaper": "^2.7.0",
     "php": "^8.1"
   },
+  "minimum-stability": "dev",
   "require-dev": {
+    "danack/php-unit-helper": ">0.3",
     "phpunit/phpunit": "9.5.4",
     "squizlabs/php_codesniffer": "^3.6.0",
     "yoast/yoastcs": "^2.1.0"

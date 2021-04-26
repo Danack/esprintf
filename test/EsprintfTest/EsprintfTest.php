@@ -6,6 +6,8 @@ namespace EsprintfTest;
 
 use EsprintfTest\BaseTestCase;
 use Esprintf\EsprintfException;
+use Esprintf\EscapedString;
+use function Danack\PHPUnitHelper\templateStringToRegExp;
 
 class EsprintfTest extends BaseTestCase
 {
@@ -81,5 +83,47 @@ class EsprintfTest extends BaseTestCase
 
         $result = esprintf($string, $params);
         $this->assertEquals('foo foo bar bar', $result);
+    }
+
+
+    function testSafeTemplateDoesntThrowAndReturnsEscapedString()
+    {
+        $templateString = '<span class=":attr_class">:html_username</span>';
+        $result = esprintf($templateString, [':attr_class' => 'red']);
+        $this->assertInstanceOf(EscapedString::class, $result);
+
+        $stringResult = $result->__toString();
+        $this->assertSame(
+            '<span class="red">:html_username</span>',
+            $stringResult
+        );
+    }
+
+    function testEscapedStringDoesntThrow()
+    {
+        $escapedString = EscapedString::fromString(
+            '<span class="red">:html_username</span>',
+        );
+        $result = esprintf($escapedString, [':html_username' => 'danack']);
+
+        $this->assertInstanceOf(EscapedString::class, $result);
+
+        $stringResult = $result->__toString();
+        $this->assertSame(
+            '<span class="red">danack</span>',
+            $stringResult
+        );
+    }
+
+    function testUnsafeTemplateThrowsException()
+    {
+        $this->expectException(\Esprintf\UnsafeTemplateException::class);
+
+        $this->expectErrorMessageMatches(
+            templateStringToRegExp(\Esprintf\UnsafeTemplateException::UNKNOWN_ESCAPER_STRING)
+        );
+
+        $generatedString = 'foobar' . strlen('foobar');
+        esprintf($generatedString, []);
     }
 }
