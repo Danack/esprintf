@@ -14,13 +14,13 @@ class BaseTestCase extends TestCase
 {
     private $startLevel = null;
 
-    public function setup()
+    public function setup(): void
     {
         $this->startLevel = ob_get_level();
         ob_start();
     }
 
-    public function teardown()
+    public function teardown(): void
     {
         if ($this->startLevel === null) {
             $this->assertEquals(0, 1, "startLevel was not set, cannot complete teardown");
@@ -37,7 +37,7 @@ class BaseTestCase extends TestCase
         );
     }
 
-    public function testPHPUnitApparentlyGetsConfused()
+    public function testPHPUnitApparentlyGetsConfused(): void
     {
         //Basically despite having:
         //<exclude>*/BaseTestCase.php</exclude>
