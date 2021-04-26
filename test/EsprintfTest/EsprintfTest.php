@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EsprintfTest;
 
-use EsprintfTest\BaseTestCase;
 use Esprintf\EsprintfException;
 use Esprintf\EscapedString;
 use function Danack\PHPUnitHelper\templateStringToRegExp;

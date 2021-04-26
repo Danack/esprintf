@@ -38,6 +38,17 @@ namespace Esprintf {
 
         throw EsprintfException::fromUnknownSearchString($search);
     }
+
+    function validateHtmlTemplateString(string $string): array
+    {
+        libxml_use_internal_errors(true);
+
+        $dom = new \DomDocument();
+        $dom->validateOnParse = true;
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $string);
+
+        return libxml_get_errors();
+    }
 }
 
 namespace {
