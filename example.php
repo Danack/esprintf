@@ -17,30 +17,34 @@ $notification_template = <<< HTML
 
 HTML;
 
-
-echo "Example of basic use with only hard-coded literal strings:\n";
-// This is fine - all parameters are literals
+//**********************************************************
+// Example of basic use of esprintf library. User input is escaped:
+//**********************************************************
 echo esprintf(
     $notification_template,
     [':attr_class' => 'alert', ":html_message" => $_GET['message']]
 );
 
-echo "Example of partially filling in the template, and passing that partial template around:";
-
-// Partially filling in the template is allowed.
+//**********************************************************
+// Example of partially filling in the template, and passing
+// that partial template around:
+//**********************************************************
 $template_with_message = esprintf(
     $notification_template,
     [":html_message" => $_GET['message']]
 );
-
 echo esprintf(
     $template_with_message,
     [':attr_class' => 'alert']
 );
 
 
+//**********************************************************
+// Example of programmers accidentally trying to use user
+// input _WITHOUT_ going through the appropriate escaping:
+//**********************************************************
 try {
-    echo "Example of programmers accidentally trying to use user input:";
+
     $bad_tempate = '<span class=":attr_class">' . $_GET['message'] . '</span>';
     echo esprintf(
         $bad_tempate,
