@@ -41,7 +41,7 @@ namespace Esprintf {
 
     function escape_input($search, $replace): EscapedString
     {
-        if (strpos($search, ':html_' ) === 0) {
+        if (strpos($search, ':html_') === 0) {
             if ($replace instanceof HtmlEscapedString) {
                 return $replace;
             }

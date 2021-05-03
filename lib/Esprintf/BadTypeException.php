@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace Esprintf;
-
 
 class BadTypeException extends EsprintfException
 {
