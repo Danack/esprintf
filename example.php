@@ -20,7 +20,7 @@ HTML;
 //**********************************************************
 // Example of basic use of esprintf library. User input is escaped:
 //**********************************************************
-echo esprintf(
+echo html_printf(
     $notification_template,
     [':attr_class' => 'alert', ":html_message" => $_GET['message']]
 );
@@ -29,11 +29,11 @@ echo esprintf(
 // Example of partially filling in the template, and passing
 // that partial template around:
 //**********************************************************
-$template_with_message = esprintf(
+$template_with_message = html_printf(
     $notification_template,
     [":html_message" => $_GET['message']]
 );
-echo esprintf(
+echo html_printf(
     $template_with_message,
     [':attr_class' => 'alert']
 );
@@ -46,7 +46,7 @@ echo esprintf(
 try {
 
     $bad_tempate = '<span class=":attr_class">' . $_GET['message'] . '</span>';
-    echo esprintf(
+    echo html_printf(
         $bad_tempate,
         [':attr_class' => 'alert']
     );

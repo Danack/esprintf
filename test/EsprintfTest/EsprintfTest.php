@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EsprintfTest;
 
 use Esprintf\EsprintfException;
-use Esprintf\EscapedString;
+use Esprintf\HtmlEscapedString;
 use function Danack\PHPUnitHelper\templateStringToRegExp;
 
 class EsprintfTest extends BaseTestCase
@@ -18,7 +18,7 @@ class EsprintfTest extends BaseTestCase
             ':raw_text' => 'foo bar'
         ];
 
-        $result = esprintf($string, $params);
+        $result = html_printf($string, $params);
         $this->assertEquals('foo foo bar bar', $result);
     }
 
@@ -60,7 +60,7 @@ class EsprintfTest extends BaseTestCase
 
         $this->expectExceptionMessage($expectedMessage);
 
-        esprintf($string, $params);
+        html_printf($string, $params);
     }
 
     function testUnknownEscaper()
@@ -80,7 +80,7 @@ class EsprintfTest extends BaseTestCase
 
         $this->expectExceptionMessage($expectedMessage);
 
-        $result = esprintf($string, $params);
+        $result = html_printf($string, $params);
         $this->assertEquals('foo foo bar bar', $result);
     }
 
@@ -88,8 +88,8 @@ class EsprintfTest extends BaseTestCase
     function testSafeTemplateDoesntThrowAndReturnsEscapedString()
     {
         $templateString = '<span class=":attr_class">:html_username</span>';
-        $result = esprintf($templateString, [':attr_class' => 'red']);
-        $this->assertInstanceOf(EscapedString::class, $result);
+        $result = html_printf($templateString, [':attr_class' => 'red']);
+        $this->assertInstanceOf(HtmlEscapedString::class, $result);
 
         $stringResult = $result->__toString();
         $this->assertSame(
@@ -100,12 +100,12 @@ class EsprintfTest extends BaseTestCase
 
     function testEscapedStringDoesntThrow()
     {
-        $escapedString = EscapedString::fromString(
+        $escapedString = HtmlEscapedString::fromString(
             '<span class="red">:html_username</span>',
         );
-        $result = esprintf($escapedString, [':html_username' => 'danack']);
+        $result = html_printf($escapedString, [':html_username' => 'danack']);
 
-        $this->assertInstanceOf(EscapedString::class, $result);
+        $this->assertInstanceOf(HtmlEscapedString::class, $result);
 
         $stringResult = $result->__toString();
         $this->assertSame(
@@ -123,6 +123,6 @@ class EsprintfTest extends BaseTestCase
         );
 
         $generatedString = 'foobar' . strlen('foobar');
-        esprintf($generatedString, []);
+        html_printf($generatedString, []);
     }
 }

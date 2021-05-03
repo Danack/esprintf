@@ -4,10 +4,72 @@ declare(strict_types=1);
 
 namespace Esprintf {
 
+    use stringable;
+
+    function cssEscapeString(string $input): CssEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeCss($input);
+        return CssEscapedString::fromString($result);
+    }
+
+    function htmlEscapeString(string $input): HtmlEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeHtml($input);
+        return HtmlEscapedString::fromString($result);
+    }
+
+    function jsEscapeString(string $input): JsEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeJs($input);
+        return JsEscapedString::fromString($result);
+    }
+
+    function htmlAttrEscapeString(string $input): JsEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeJs($input);
+        return JsEscapedString::fromString($result);
+    }
+
+    function urlEscapeString(string $input): UrlEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeUrl($input);
+        return UrlEscapedString::fromString($result);
+    }
+
     function rawString(string $string)
     {
         return $string;
     }
+
+    function cssEscape(string|stringable|CssEscapedString $x)
+    {
+        if ($x instanceof CssEscapedString) {
+            return $x;
+        }
+
+        throw new
+    }
+
+    function htmlAttrEscape(string|HtmlAttrEscapedString $x)
+    {
+
+    }
+
+    function jsEscape(string|JsEscapedString $x)
+    {
+
+    }
+
+    function urlEscape(string|UrlEscapedString $x)
+    {
+
+    }
+
 
     /**
      * @param string $search The string that will be searched for.
@@ -17,18 +79,19 @@ namespace Esprintf {
     function getEscapeCallable($search)
     {
         static $escaper = null;
+        static $callables = null;
         if ($escaper === null) {
             $escaper = new \Laminas\Escaper\Escaper('utf-8');
-        }
 
-        $callables = [
-            ':attr_' => [$escaper, 'escapeHtmlAttr'],
+            $callables = [
+                ':attr_' => [$escaper, 'escapeHtmlAttr'],
             ':js_' => [$escaper, 'escapeJs'],
             ':css_' => [$escaper, 'escapeCss'],
             ':uri_' => [$escaper, 'escapeUrl'],
             ':raw_' => 'Esprintf\rawString',
             ':html_' => [$escaper, 'escapeHtml']
         ];
+        }
 
         foreach ($callables as $key => $callable) {
             if (strpos($search, $key) === 0) {
@@ -53,17 +116,17 @@ namespace Esprintf {
 
 namespace {
 
-    use Esprintf\EscapedString;
+    use Esprintf\HtmlEscapedString;
     use Esprintf\EsprintfException;
     use Esprintf\UnsafeTemplateException;
 
     /**
-     * @param string|EscapedString $template
+     * @param string|HtmlEscapedString $template
      * @param array<string, string> $searchReplace
      * @return string
      * @throws EsprintfException
      */
-    function esprintf(string|EscapedString $template, array $searchReplace): EscapedString
+    function html_printf(string|HtmlEscapedString $template, array $searchReplace): HtmlEscapedString
     {
         $escapedParams = [];
 
@@ -87,6 +150,8 @@ namespace {
 
         foreach ($searchReplace as $search => $replace) {
             $escapeFn = Esprintf\getEscapeCallable($search);
+
+
             $escapedParams[$search] = $escapeFn($replace);
         }
 
@@ -96,6 +161,6 @@ namespace {
             $template
         );
 
-        return EscapedString::fromString($stringResult);
+        return HtmlEscapedString::fromString($stringResult);
     }
 }
