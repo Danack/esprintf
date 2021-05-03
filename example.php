@@ -2,6 +2,9 @@
 
 require_once __DIR__ . "/vendor/autoload.php";
 
+use function Esprintf\urlEscape;
+use function Esprintf\htmlEscape;
+
 if (function_exists('is_literal') !== true) {
     echo "This example requires the wip 'is_literal', and can't be run without it.";
     exit(-1);
@@ -55,6 +58,32 @@ try {
     exit(-1);
 }
 catch (Esprintf\UnsafeTemplateException $ute) {
+    echo "Hooray! we caught this mistake!\n";
+    echo $ute->getMessage() . "\n";
+}
+
+
+//**********************************************************
+// Example of correctly using uri escaped
+//**********************************************************
+
+
+
+//**********************************************************
+// Example of incorrectly using html escaped
+//**********************************************************
+
+$html = htmlEscape("This is some &perfectly normal text ");
+$template = '<span class=":attr_class">Hello there</span>';
+
+try {
+    // Trying to use html escaped where html_attr is expected
+    echo html_printf(
+        $template,
+        [':attr_class' => $html]
+    );
+}
+catch (Esprintf\BadTypeException $bte) {
     echo "Hooray! we caught this mistake!\n";
     echo $ute->getMessage() . "\n";
 }

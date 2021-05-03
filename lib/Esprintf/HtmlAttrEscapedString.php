@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Esprintf;
 
 // Escape a string for the HTML Attribute context.
-class HtmlAttrEscapedString
+class HtmlAttrEscapedString implements EscapedString
 {
     private string $contents;
 

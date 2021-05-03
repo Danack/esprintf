@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Esprintf;
 
-class UrlEscapedString
+class UrlEscapedString implements EscapedString
 {
     private string $contents;
 

@@ -8,13 +8,11 @@ namespace Esprintf;
 
 class BadTypeException extends EsprintfException
 {
-
     const BAD_CSS_TYPE          = "blah blah, can't use type %s where string|stringable|CssEscapedString";
     const BAD_HTML_TYPE         = "blah blah, can't use type %s where string|stringable|HtmlEscapedString";
     const BAD_HTML_ATTR_TYPE    = "blah blah, can't use type %s where string|stringable|HtmlAttrEscapedString";
     const BAD_JS_TYPE           = "blah blah, can't use type %s where string|stringable|JsEscapedString";
     const BAD_URL_TYPE          = "blah blah, can't use type %s where string|stringable|UrlEscapedString";
-
 
     public static function badCss($value)
     {
@@ -26,4 +24,43 @@ class BadTypeException extends EsprintfException
         return new self($message);
     }
 
+    public static function badHtml(mixed $value)
+    {
+        $message = sprintf(
+            self::BAD_HTML_TYPE,
+            get_debug_type($value)
+        );
+
+        return new self($message);
+    }
+
+    public static function badHtmlAttr(mixed $value)
+    {
+        $message = sprintf(
+            self::BAD_HTML_ATTR_TYPE,
+            get_debug_type($value)
+        );
+
+        return new self($message);
+    }
+
+    public static function badJs(mixed $value)
+    {
+        $message = sprintf(
+            self::BAD_JS_TYPE,
+            get_debug_type($value)
+        );
+
+        return new self($message);
+    }
+
+    public static function badUrl(mixed $value)
+    {
+        $message = sprintf(
+            self::BAD_URL_TYPE,
+            get_debug_type($value)
+        );
+
+        return new self($message);
+    }
 }
