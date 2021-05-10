@@ -18,11 +18,11 @@ namespace Esprintf {
         return HtmlEscapedString::fromString($result);
     }
 
-    function htmlAttrEscape(string $input): JsEscapedString
+    function htmlAttrEscape(string $input): HtmlAttrEscapedString
     {
         $escaper = new \Laminas\Escaper\Escaper('utf-8');
         $result = $escaper->escapeJs($input);
-        return JsEscapedString::fromString($result);
+        return HtmlAttrEscapedString::fromString($result);
     }
 
     function jsEscape(string $input): JsEscapedString
@@ -48,7 +48,7 @@ namespace Esprintf {
 
             // Some other type of already escaped string
             if ($replace instanceof EscapedString) {
-                throw BadTypeException::badHtml($search);
+                throw BadTypeException::badHtml($replace);
             }
 
             return htmlEscape($replace);
@@ -60,7 +60,7 @@ namespace Esprintf {
             }
             // Some other type of already escaped string
             if ($replace instanceof EscapedString) {
-                throw BadTypeException::badHtmlAttr($search);
+                throw BadTypeException::badHtmlAttr($replace);
             }
 
             return htmlAttrEscape($replace);
@@ -72,7 +72,7 @@ namespace Esprintf {
 
             // Some other type of already escaped string
             if ($replace instanceof EscapedString) {
-                throw BadTypeException::badJs($search);
+                throw BadTypeException::badJs($replace);
             }
 
             return jsEscape($replace);
@@ -83,7 +83,7 @@ namespace Esprintf {
             }
             // Some other type of already escaped string
             if ($replace instanceof EscapedString) {
-                throw BadTypeException::badCss($search);
+                throw BadTypeException::badCss($replace);
             }
 
             return cssEscape($replace);
@@ -95,7 +95,7 @@ namespace Esprintf {
 
             // Some other type of already escaped string
             if ($replace instanceof EscapedString) {
-                throw BadTypeException::badUrl($search);
+                throw BadTypeException::badUrl($replace);
             }
 
             return urlEscape($replace);
@@ -169,7 +169,7 @@ namespace {
                 throw UnsafeTemplateException::blah();
             }
         }
-        // Not a string, but an EscapedString object
+        // Not a string, but an HtmlEscapedString object
         else {
             $template = $template->__toString();
         }

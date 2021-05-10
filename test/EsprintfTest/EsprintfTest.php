@@ -12,10 +12,10 @@ class EsprintfTest extends BaseTestCase
 {
     public function testRaw()
     {
-        $string = 'foo :raw_text bar';
+        $string = 'foo :html_text bar';
 
         $params = [
-            ':raw_text' => 'foo bar'
+            ':html_text' => 'foo bar'
         ];
 
         $result = html_printf($string, $params);
