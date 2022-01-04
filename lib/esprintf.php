@@ -18,7 +18,7 @@ namespace Esprintf {
     {
         static $escaper = null;
         if ($escaper === null) {
-            $escaper = new \Zend\Escaper\Escaper('utf-8');
+            $escaper = new \Laminas\Escaper\Escaper('utf-8');
         }
 
         $callables = [

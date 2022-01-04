@@ -1,6 +1,6 @@
 # esprintf
 
-sprintf mixed with zend escaper.
+sprintf mixed with Laminas escaper.
 
 All placeholder strings must be explicitly labeled as to what type of escaping they will have done to them, so you can see in the source string if the correct escaping is done for the string location. 
 
