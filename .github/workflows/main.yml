@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   unit_tests_8_0:
-    name: Unit Tests
+    name: Unit Tests 8.0
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -11,7 +11,7 @@ jobs:
       - name: Perform phpunit tests
         uses: ./containers/run_php_8_0_tests
   unit_tests_8_1:
-    name: Unit Tests
+    name: Unit Tests 8.1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
       - name: Perform phpunit tests
         uses: ./containers/run_php_8_1_tests
   code_style:
-    name: Code Style Analysis
+    name: Code Style Analysis 8.0
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
