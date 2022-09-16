@@ -8,14 +8,16 @@ All placeholder strings must be explicitly labeled as to what type of escaping t
 ## Usage
 
 ```
-    $string = "<span class=':attr_class'>:html_message</span>";
+    $templateString = "<span class=':attr_class'>:html_message</span>";
     $params = [
         ':attr_class' => 'warning',
         ':html_message' => 'foo bar'
     ];
      
-    echo esprintf($string, $params);
+    echo esprintf($templateString, $params);
 ```
+
+The template string must either be a literal string embedded in the source code, or an EscapedString which is the type of object returned from esprintf().
 
 
 ## Supported escapers

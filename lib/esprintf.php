@@ -4,55 +4,180 @@ declare(strict_types=1);
 
 namespace Esprintf {
 
-    function rawString(string $string)
+    function cssEscape(string $input): CssEscapedString
     {
-        return $string;
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeCss($input);
+        return CssEscapedString::fromString($result);
     }
 
-    /**
-     * @param string $search The string that will be searched for.
-     * @return callable The callable that will do the escaping for the replacement.
-     * @throws EsprintfException
-     */
-    function getEscapeCallable($search)
+    function htmlEscape(string $input): HtmlEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeHtml($input);
+        return HtmlEscapedString::fromString($result);
+    }
+
+    function htmlAttrEscape(string $input): HtmlAttrEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeJs($input);
+        return HtmlAttrEscapedString::fromString($result);
+    }
+
+    function jsEscape(string $input): JsEscapedString
+    {
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeJs($input);
+        return JsEscapedString::fromString($result);
+    }
+
+    function urlEscape(string $x): UrlEscapedString
     {
         static $escaper = null;
         if ($escaper === null) {
             $escaper = new \Laminas\Escaper\Escaper('utf-8');
         }
 
-        $callables = [
-            ':attr_' => [$escaper, 'escapeHtmlAttr'],
-            ':js_' => [$escaper, 'escapeJs'],
-            ':css_' => [$escaper, 'escapeCss'],
-            ':uri_' => [$escaper, 'escapeUrl'],
-            ':raw_' => 'Esprintf\rawString',
-            ':html_' => [$escaper, 'escapeHtml']
-        ];
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
+        $result = $escaper->escapeUrl($x);
+        return UrlEscapedString::fromString($result);
+    }
 
-        foreach ($callables as $key => $callable) {
-            if (strpos($search, $key) === 0) {
-                return $callable;
+    function escape_input($search, $replace): EscapedString
+    {
+        if (strpos($search, ':html_') === 0) {
+            if ($replace instanceof HtmlEscapedString) {
+                return $replace;
             }
+
+            // Some other type of already escaped string
+            if ($replace instanceof EscapedString) {
+                throw BadTypeException::badHtml($replace);
+            }
+
+            return htmlEscape($replace);
         }
+
+        if (strpos($search, ':attr_') === 0) {
+            if ($replace instanceof HtmlAttrEscapedString) {
+                return $replace;
+            }
+            // Some other type of already escaped string
+            if ($replace instanceof EscapedString) {
+                throw BadTypeException::badHtmlAttr($replace);
+            }
+
+            return htmlAttrEscape($replace);
+        }
+        if (strpos($search, ':js_') === 0) {
+            if ($replace instanceof JsEscapedString) {
+                return $replace;
+            }
+
+            // Some other type of already escaped string
+            if ($replace instanceof EscapedString) {
+                throw BadTypeException::badJs($replace);
+            }
+
+            return jsEscape($replace);
+        }
+        if (strpos($search, ':css_') === 0) {
+            if ($replace instanceof CssEscapedString) {
+                return $replace;
+            }
+            // Some other type of already escaped string
+            if ($replace instanceof EscapedString) {
+                throw BadTypeException::badCss($replace);
+            }
+
+            return cssEscape($replace);
+        }
+        if (strpos($search, ':uri_') === 0) {
+            if ($replace instanceof UrlEscapedString) {
+                return $replace;
+            }
+
+            // Some other type of already escaped string
+            if ($replace instanceof EscapedString) {
+                throw BadTypeException::badUrl($replace);
+            }
+
+            return urlEscape($replace);
+        }
+
 
         throw EsprintfException::fromUnknownSearchString($search);
     }
+
+    function validateHtmlTemplateString(string $string): array
+    {
+        libxml_use_internal_errors(true);
+
+        $dom = new \DomDocument();
+        $dom->validateOnParse = true;
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $string);
+    }
+
+
+//    /**
+//     * @param string $search The string that will be searched for.
+//     * @return callable The callable that will do the escaping for the replacement.
+//     * @throws EsprintfException
+//     */
+//    function getEscapeCallable($search)
+//    {
+//        static $escaper = null;
+//        static $callables = null;
+//        if ($escaper === null) {
+//            $escaper = new \Laminas\Escaper\Escaper('utf-8');
+//
+//            $callables = [
+//                ':attr_' => [$escaper, 'escapeHtmlAttr'],
+//                ':js_' => [$escaper, 'escapeJs'],
+//                ':css_' => [$escaper, 'escapeCss'],
+//                ':uri_' => [$escaper, 'escapeUrl'],
+//    //            ':raw_' => 'Esprintf\rawString',
+//                ':html_' => [$escaper, 'escapeHtml']
+//            ];
+//        }
+//
+//        foreach ($callables as $key => $callable) {
+//            if (strpos($search, $key) === 0) {
+//                return $callable;
+//            }
+//        }
+//
+//        throw EsprintfException::fromUnknownSearchString($search);
+//    }
 }
 
 namespace {
 
+    use Esprintf\EscapedString;
+    use Esprintf\HtmlEscapedString;
     use Esprintf\EsprintfException;
+    use Esprintf\UnsafeTemplateException;
 
     /**
-     * @param string $string
-     * @param array $searchReplace
+     * @param string|HtmlEscapedString $template
+     * @param array<string, string|EscapedString> $searchReplace
      * @return string
      * @throws EsprintfException
      */
-    function esprintf($string, $searchReplace) : string
+    function html_printf(string|HtmlEscapedString $template, array $searchReplace): HtmlEscapedString
     {
         $escapedParams = [];
+
+        if (is_string($template) === true) {
+            if (is_literal($template) !== true) {
+                throw UnsafeTemplateException::blah();
+            }
+        }
+        // Not a string, but an HtmlEscapedString object
+        else {
+            $template = $template->__toString();
+        }
 
         $count = 0;
         foreach ($searchReplace as $key => $value) {
@@ -63,14 +188,15 @@ namespace {
         }
 
         foreach ($searchReplace as $search => $replace) {
-            $escapeFn = Esprintf\getEscapeCallable($search);
-            $escapedParams[$search] = $escapeFn($replace);
+            $escapedParams[$search] = Esprintf\escape_input($search, $replace);
         }
 
-        return str_replace(
+        $stringResult = str_replace(
             array_keys($escapedParams),
             $escapedParams,
-            $string
+            $template
         );
+
+        return HtmlEscapedString::fromString($stringResult);
     }
 }

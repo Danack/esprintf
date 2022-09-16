@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace EsprintfTest;
 
-use EsprintfTest\BaseTestCase;
 use Esprintf\EsprintfException;
+use Esprintf\HtmlEscapedString;
+use function Danack\PHPUnitHelper\templateStringToRegExp;
 
 class EsprintfTest extends BaseTestCase
 {
     public function testRaw()
     {
-        $string = 'foo :raw_text bar';
+        $string = 'foo :html_text bar';
 
         $params = [
-            ':raw_text' => 'foo bar'
+            ':html_text' => 'foo bar'
         ];
 
-        $result = esprintf($string, $params);
+        $result = html_printf($string, $params);
         $this->assertEquals('foo foo bar bar', $result);
     }
 
@@ -59,7 +60,7 @@ class EsprintfTest extends BaseTestCase
 
         $this->expectExceptionMessage($expectedMessage);
 
-        esprintf($string, $params);
+        html_printf($string, $params);
     }
 
     function testUnknownEscaper()
@@ -79,7 +80,49 @@ class EsprintfTest extends BaseTestCase
 
         $this->expectExceptionMessage($expectedMessage);
 
-        $result = esprintf($string, $params);
+        $result = html_printf($string, $params);
         $this->assertEquals('foo foo bar bar', $result);
+    }
+
+
+    function testSafeTemplateDoesntThrowAndReturnsEscapedString()
+    {
+        $templateString = '<span class=":attr_class">:html_username</span>';
+        $result = html_printf($templateString, [':attr_class' => 'red']);
+        $this->assertInstanceOf(HtmlEscapedString::class, $result);
+
+        $stringResult = $result->__toString();
+        $this->assertSame(
+            '<span class="red">:html_username</span>',
+            $stringResult
+        );
+    }
+
+    function testEscapedStringDoesntThrow()
+    {
+        $escapedString = HtmlEscapedString::fromString(
+            '<span class="red">:html_username</span>',
+        );
+        $result = html_printf($escapedString, [':html_username' => 'danack']);
+
+        $this->assertInstanceOf(HtmlEscapedString::class, $result);
+
+        $stringResult = $result->__toString();
+        $this->assertSame(
+            '<span class="red">danack</span>',
+            $stringResult
+        );
+    }
+
+    function testUnsafeTemplateThrowsException()
+    {
+        $this->expectException(\Esprintf\UnsafeTemplateException::class);
+
+        $this->expectErrorMessageMatches(
+            templateStringToRegExp(\Esprintf\UnsafeTemplateException::UNKNOWN_ESCAPER_STRING)
+        );
+
+        $generatedString = 'foobar' . strlen('foobar');
+        html_printf($generatedString, []);
     }
 }

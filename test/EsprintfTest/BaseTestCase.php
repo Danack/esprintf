@@ -37,7 +37,7 @@ class BaseTestCase extends TestCase
         );
     }
 
-    public function testPHPUnitApparentlyGetsConfused()
+    public function testPHPUnitApparentlyGetsConfused(): void
     {
         //Basically despite having:
         //<exclude>*/BaseTestCase.php</exclude>
