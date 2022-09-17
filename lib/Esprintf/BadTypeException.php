@@ -6,11 +6,11 @@ namespace Esprintf;
 
 class BadTypeException extends EsprintfException
 {
-    const BAD_CSS_TYPE          = "blah blah css, can't use type %s where string|stringable|CssEscapedString";
-    const BAD_HTML_TYPE         = "blah blah html, can't use type %s where string|stringable|HtmlEscapedString";
-    const BAD_HTML_ATTR_TYPE    = "blah blah html attr, can't use type %s where string|stringable|HtmlAttrEscapedString";
-    const BAD_JS_TYPE           = "blah blah js, can't use type %s where string|stringable|JsEscapedString";
-    const BAD_URL_TYPE          = "blah blah url, can't use type %s where string|stringable|UrlEscapedString";
+    const BAD_CSS_TYPE       = "Can't use type %s as CSS. Only one of string, stringable, CssEscapedString would be acceptable.";
+    const BAD_HTML_TYPE      = "Can't use type %s as HTML. Only one of string, stringable, HtmlEscapedString would be acceptable.";
+    const BAD_HTML_ATTR_TYPE = "Can't use type %s as HTML attribute. Only one of string, stringable, HtmlAttrEscapedString would be acceptable.";
+    const BAD_JS_TYPE        = "Can't use type %s as JavaScript. Only one of string, stringable, JsEscapedString would be acceptable.";
+    const BAD_URL_TYPE       = "Can't use type %s as URL. Only one of string, stringable, UrlEscapedString would be acceptable.";
 
     public static function badCss($value)
     {

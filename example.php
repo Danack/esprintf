@@ -5,10 +5,10 @@ require_once __DIR__ . "/vendor/autoload.php";
 use function Esprintf\urlEscape;
 use function Esprintf\htmlEscape;
 
-if (function_exists('is_literal') !== true) {
-    echo "This example requires the wip 'is_literal', and can't be run without it.";
-    exit(-1);
-}
+//if (function_exists('is_literal') !== true) {
+//    echo "This example requires the wip 'is_literal', and can't be run without it.";
+//    exit(-1);
+//}
 
 // setup representation of user input
 $_GET['message'] = file_get_contents(__DIR__ . '/message.txt');
@@ -42,25 +42,25 @@ echo html_printf(
 );
 
 
-//**********************************************************
-// Example of programmers accidentally trying to use user
-// input _WITHOUT_ going through the appropriate escaping:
-//**********************************************************
-try {
-
-    $bad_tempate = '<span class=":attr_class">' . $_GET['message'] . '</span>';
-    echo html_printf(
-        $bad_tempate,
-        [':attr_class' => 'alert']
-    );
-
-    echo "This will never be reached, as the programmer mistake will be caught";
-    exit(-1);
-}
-catch (Esprintf\UnsafeTemplateException $ute) {
-    echo "Hooray! we caught this mistake!\n";
-    echo $ute->getMessage() . "\n";
-}
+////**********************************************************
+//// Example of programmers accidentally trying to use user
+//// input _WITHOUT_ going through the appropriate escaping:
+////**********************************************************
+//try {
+//
+//    $bad_tempate = '<span class=":attr_class">' . $_GET['message'] . '</span>';
+//    echo html_printf(
+//        $bad_tempate,
+//        [':attr_class' => 'alert']
+//    );
+//
+//    echo "This will never be reached, as the programmer mistake will be caught";
+//    exit(-1);
+//}
+//catch (Esprintf\UnsafeTemplateException $ute) {
+//    echo "Hooray! we caught this mistake!\n";
+//    echo $ute->getMessage() . "\n";
+//}
 
 
 //**********************************************************

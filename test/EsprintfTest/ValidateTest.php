@@ -6,11 +6,16 @@ namespace EsprintfTest;
 
 use function Esprintf\validateHtmlTemplateString;
 
+/**
+ * @coversNothing
+ */
 class ValidateTest extends BaseTestCase
 {
+    /**
+     * @covers ::\Esprintf\validateHtmlTemplateString
+     */
     public function testValidIsOk()
     {
-        $this->markTestSkipped();
         $result = validateHtmlTemplateString("<div></div>");
         $this->assertIsArray($result);
         $this->assertEmpty($result);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Esprintf {
 
+    use Esprintf\Esprintf;
+
     function cssEscape(string $input): CssEscapedString
     {
         $escaper = new \Laminas\Escaper\Escaper('utf-8');
@@ -44,9 +46,10 @@ namespace Esprintf {
         return UrlEscapedString::fromString($result);
     }
 
+
     function escape_input($search, $replace): EscapedString
     {
-        if (strpos($search, ':html_') === 0) {
+        if (str_starts_with($search, Esprintf::HTML) === true) {
             if ($replace instanceof HtmlEscapedString) {
                 return $replace;
             }
@@ -59,7 +62,7 @@ namespace Esprintf {
             return htmlEscape($replace);
         }
 
-        if (strpos($search, ':attr_') === 0) {
+        if (strpos($search, Esprintf::HTML_ATTR) === 0) {
             if ($replace instanceof HtmlAttrEscapedString) {
                 return $replace;
             }
@@ -70,7 +73,7 @@ namespace Esprintf {
 
             return htmlAttrEscape($replace);
         }
-        if (strpos($search, ':js_') === 0) {
+        if (str_starts_with($search, Esprintf::JS) === true) {
             if ($replace instanceof JsEscapedString) {
                 return $replace;
             }
@@ -82,7 +85,7 @@ namespace Esprintf {
 
             return jsEscape($replace);
         }
-        if (strpos($search, ':css_') === 0) {
+        if (str_starts_with($search, Esprintf::CSS) === true) {
             if ($replace instanceof CssEscapedString) {
                 return $replace;
             }
@@ -93,7 +96,7 @@ namespace Esprintf {
 
             return cssEscape($replace);
         }
-        if (strpos($search, ':uri_') === 0) {
+        if (str_starts_with($search, Esprintf::URI) === true) {
             if ($replace instanceof UrlEscapedString) {
                 return $replace;
             }
@@ -117,39 +120,17 @@ namespace Esprintf {
         $dom = new \DomDocument();
         $dom->validateOnParse = true;
         $dom->loadHTML('<?xml encoding="UTF-8">' . $string);
+
+        $errors = libxml_get_errors();
+        foreach ($errors as $error) {
+            // handle errors here
+        }
+
+        libxml_clear_errors();
+        // TODO - check the appropriate handlers are used by parsing the HTML
+
+        return $errors;
     }
-
-
-//    /**
-//     * @param string $search The string that will be searched for.
-//     * @return callable The callable that will do the escaping for the replacement.
-//     * @throws EsprintfException
-//     */
-//    function getEscapeCallable($search)
-//    {
-//        static $escaper = null;
-//        static $callables = null;
-//        if ($escaper === null) {
-//            $escaper = new \Laminas\Escaper\Escaper('utf-8');
-//
-//            $callables = [
-//                ':attr_' => [$escaper, 'escapeHtmlAttr'],
-//                ':js_' => [$escaper, 'escapeJs'],
-//                ':css_' => [$escaper, 'escapeCss'],
-//                ':uri_' => [$escaper, 'escapeUrl'],
-//    //            ':raw_' => 'Esprintf\rawString',
-//                ':html_' => [$escaper, 'escapeHtml']
-//            ];
-//        }
-//
-//        foreach ($callables as $key => $callable) {
-//            if (strpos($search, $key) === 0) {
-//                return $callable;
-//            }
-//        }
-//
-//        throw EsprintfException::fromUnknownSearchString($search);
-//    }
 }
 
 namespace {
@@ -157,7 +138,7 @@ namespace {
     use Esprintf\EscapedString;
     use Esprintf\HtmlEscapedString;
     use Esprintf\EsprintfException;
-    use Esprintf\UnsafeTemplateException;
+//    use Esprintf\UnsafeTemplateException;
 
     /**
      * @param string|HtmlEscapedString $template
@@ -170,9 +151,10 @@ namespace {
         $escapedParams = [];
 
         if (is_string($template) === true) {
-            if (is_literal($template) !== true) {
-                throw UnsafeTemplateException::blah();
-            }
+            // TODO - remove this.
+//            if (is_literal($template) !== true) {
+//                throw UnsafeTemplateException::blah();
+//            }
         }
         // Not a string, but an HtmlEscapedString object
         else {

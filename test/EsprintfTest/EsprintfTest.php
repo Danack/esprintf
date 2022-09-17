@@ -8,9 +8,15 @@ use Esprintf\EsprintfException;
 use Esprintf\HtmlEscapedString;
 use function Danack\PHPUnitHelper\templateStringToRegExp;
 
+/**
+ * @coversNothing
+ */
 class EsprintfTest extends BaseTestCase
 {
-    public function testRaw()
+    /**
+     * @covers ::html_printf
+     */
+    public function testhtml_printf()
     {
         $string = 'foo :html_text bar';
 
@@ -46,6 +52,7 @@ class EsprintfTest extends BaseTestCase
     /**
      * @param $searchReplaceArray
      * @dataProvider providesBadKeyGivesException
+     * @covers ::html_printf
      */
     public function testBadKeyGivesException($position, $badKey, $params)
     {
@@ -63,6 +70,9 @@ class EsprintfTest extends BaseTestCase
         html_printf($string, $params);
     }
 
+    /**
+     * @covers ::html_printf
+     */
     function testUnknownEscaper()
     {
         $string = 'Irrelevant to test';
@@ -84,7 +94,9 @@ class EsprintfTest extends BaseTestCase
         $this->assertEquals('foo foo bar bar', $result);
     }
 
-
+    /**
+     * @covers ::html_printf
+     */
     function testSafeTemplateDoesntThrowAndReturnsEscapedString()
     {
         $templateString = '<span class=":attr_class">:html_username</span>';
@@ -98,6 +110,9 @@ class EsprintfTest extends BaseTestCase
         );
     }
 
+    /**
+     * @covers ::html_printf
+     */
     function testEscapedStringDoesntThrow()
     {
         $escapedString = HtmlEscapedString::fromString(
@@ -114,15 +129,16 @@ class EsprintfTest extends BaseTestCase
         );
     }
 
-    function testUnsafeTemplateThrowsException()
-    {
-        $this->expectException(\Esprintf\UnsafeTemplateException::class);
-
-        $this->expectErrorMessageMatches(
-            templateStringToRegExp(\Esprintf\UnsafeTemplateException::UNKNOWN_ESCAPER_STRING)
-        );
-
-        $generatedString = 'foobar' . strlen('foobar');
-        html_printf($generatedString, []);
-    }
+    // This was dependent on is_literal
+//    function testUnsafeTemplateThrowsException()
+//    {
+//        $this->expectException(\Esprintf\UnsafeTemplateException::class);
+//
+//        $this->expectErrorMessageMatches(
+//            templateStringToRegExp(\Esprintf\UnsafeTemplateException::UNKNOWN_ESCAPER_STRING)
+//        );
+//
+//        $generatedString = 'foobar' . strlen('foobar');
+//        html_printf($generatedString, []);
+//    }
 }
