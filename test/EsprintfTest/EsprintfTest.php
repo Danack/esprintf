@@ -82,4 +82,15 @@ class EsprintfTest extends BaseTestCase
         $result = esprintf($string, $params);
         $this->assertEquals('foo foo bar bar', $result);
     }
+
+    function testReplacementIsInteger()
+    {
+        $string = "two times two is :html_text m'kay?";
+        $params = [
+            ':html_text' => 4
+        ];
+
+        $result = esprintf($string, $params);
+        $this->assertEquals("two times two is 4 m'kay?", $result);
+    }
 }
