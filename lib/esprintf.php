@@ -64,6 +64,11 @@ namespace {
 
         foreach ($searchReplace as $search => $replace) {
             $escapeFn = Esprintf\getEscapeCallable($search);
+
+            if (is_int($replace) === true) {
+                $replace = (string)$replace;
+            }
+
             $escapedParams[$search] = $escapeFn($replace);
         }
 
